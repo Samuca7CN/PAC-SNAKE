@@ -1,0 +1,13 @@
+#include "resource.h"
+
+IDI_MEUICONE ICON "logo.ico"
+
+IDM_MEUMENU MENU
+BEGIN
+    POPUP "&Iniciar"
+    BEGIN
+        MENUITEM "&Novo Jogo", START
+        MENUITEM SEPARATOR
+        MENUITEM "&Carregar Jogo", LOAD
+    END
+END

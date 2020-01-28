@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1580230877 source:c:\users\samue\desktop\uesc\cet635 - linguagem de programa«√o i\projeto\pac snake\main.c
+	<windows.h>
+	<conio.h>
+	<stdio.h>
+	<stdlib.h>
+	"resource.h"
+
+1580231277 c:\users\samue\desktop\uesc\cet635 - linguagem de programa«√o i\projeto\pac snake\resource.h
+
+1580231738 source:c:\users\samue\desktop\uesc\cet635 - linguagem de programa«√o i\projeto\pac snake\resource.rc
+	"resource.h"
+

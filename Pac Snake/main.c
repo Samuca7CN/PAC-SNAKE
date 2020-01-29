@@ -15,6 +15,12 @@
 #define WINDOW_HEIGHT	    500
 
 //--------------------------------------------------------------------------
+// Variáveis globais
+//--------------------------------------------------------------------------
+HDC hMemDC = NULL; // DC de memória
+HBITMAP hBmp = NULL; // Bitmap compatível
+
+//--------------------------------------------------------------------------
 // Protótipo das funções
 //--------------------------------------------------------------------------
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
@@ -94,48 +100,86 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     HDC hDC = NULL;
     PAINTSTRUCT psPaint;
 
+    static int bInverteBmp = 0;
+
     switch(uMsg){
 
         case WM_CREATE:
-            return(0);
+        {
+            hDC = GetDC(hWnd);
+            hMemDC = CreateCompatibleDC(hDC);
+            hBmp = (HBITMAP)LoadImage(NULL, "background.bmp", IMAGE_BITMAP, WINDOW_WIDTH, WINDOW_HEIGHT, LR_LOADFROMFILE);
+            SelectObject(hMemDC, hBmp);
+            return 0;
+        }
         break;
 
         case WM_PAINT:
-            {
-                hDC = BeginPaint(hWnd, &psPaint);
-                EndPaint(hWnd, &psPaint);
-                return(0);
-            }
-        break;
+        {
+            hDC = BeginPaint(hWnd, &psPaint);
+            BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 
-        case WM_CLOSE:
-                DestroyWindow(hWnd);
-                return(0);
-        break;
-
-        case WM_DESTROY:
-                PostQuitMessage(WM_QUIT);
-                return(0);
+            EndPaint(hWnd, &psPaint);
+            return 0;
+        }
         break;
 
         case WM_COMMAND:
             switch(LOWORD(wParam)){
                 case START:
-                    //...
+                    {
+                        DeleteObject(SelectObject(hMemDC, hBmp));
+                        DeleteDC(hMemDC);
+                        char texto[255] = "Iniciar Jogo!";
+                        TextOut(hDC, 0, 0, texto, lstrlen(texto));
+                    }
                 break;
                 case LOAD:
-                    //...
+                    DeleteObject(SelectObject(hMemDC, hBmp));
+                    DeleteDC(hMemDC);
+                    char texto[255] = "Carregar Jogo!";
+                    TextOut(hDC, 0, 0, texto, lstrlen(texto));
                 break;
+            }
+            return 0;
+        break;
+
+        case WM_SIZE:
+            {
+                SendMessage(hWnd, WM_PAINT, (WPARAM)0, (LPARAM)0);
+                return 0;
             }
         break;
 
-        case WM_KEYDOWN:
-                if(wParam == VK_F3)
-                SendMessage(hWnd, WM_SETTEXT, (WPARAM)0, (LPARAM)"F3 pressionado");
-                return(0);
+        case WM_CLOSE:
+        {
+            DeleteObject(SelectObject(hMemDC, hBmp));
+            DeleteDC(hMemDC);
+            DestroyWindow(hWnd);
+            return 0;
+        }
+        break;
+
+        case WM_LBUTTONDOWN:
+        {
+            bInverteBmp = !bInverteBmp;
+            InvalidateRect(hWnd, NULL, FALSE);
+            return 0;
+        }
+        break;
+
+        case WM_DESTROY:
+        {
+            PostQuitMessage(0);
+            return 0;
+        }
         break;
 
         default:
-                return(DefWindowProc(hWnd, uMsg, wParam, lParam));
+        {
+            return(DefWindowProc(hWnd, uMsg, wParam, lParam));
+        }
+        break;
+
     }
 }
